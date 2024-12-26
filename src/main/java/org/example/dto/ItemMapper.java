@@ -6,21 +6,21 @@ public class ItemMapper {
 
     public static ItemDto toDto(Item item) {
         return ItemDto.builder()
+                .ownerId(item.getOwnerId())
                 .id(item.getId())
-                .name(item.getName())
                 .beenOnLoan(item.getBeenOnLoan())
+                .name(item.getName())
                 .description(item.getDescription())
-                .status(item.getStatus())
+                .available(item.getAvailable())
                 .build();
     }
 
-    public static Item toModel(ItemDto dto) {
+    public static Item fromDto(ItemDto itemDto) {
         return Item.builder()
-                .id(dto.getId())
-                .name(dto.getName())
-                .beenOnLoan(dto.getBeenOnLoan())
-                .description(dto.getDescription())
-                .status(dto.getStatus())
+                .beenOnLoan(itemDto.getBeenOnLoan())
+                .name(itemDto.getName())
+                .description(itemDto.getDescription())
+                .available(itemDto.getAvailable())
                 .build();
     }
 }

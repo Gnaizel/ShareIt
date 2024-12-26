@@ -1,13 +1,20 @@
 package org.example.Item;
 
+import lombok.RequiredArgsConstructor;
+import org.example.user.UserRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
+@RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository {
+    private final UserRepository userRepository;
+
     private final Collection<Item> items = new HashSet<>();
 
     @Override
@@ -16,8 +23,17 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
+    public Collection<Item> getAllByOwnerId(long ownerId) {
+        return items.stream()
+                .filter(item -> item.getOwnerId() == ownerId)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
     public Item save(Item item) {
-        item.setId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
+        userRepository.getById(item.getOwnerId());
+        item.setId(Instant.now().toEpochMilli());
         items.add(item);
         return getById(item.getId());
     }
@@ -41,4 +57,17 @@ public class ItemRepositoryImpl implements ItemRepository {
                 .findFirst()
                 .orElseThrow();
     }
+
+    @Override
+    public Collection<Item> search(String text) {
+        if (text == null || text.isBlank()) {
+            return Collections.emptyList();
+        }
+        return items.stream()
+                .filter(item -> (item.getName() != null && item.getName().toLowerCase().contains(text.toLowerCase()))
+                        || (item.getDescription() != null && item.getDescription().toLowerCase().contains(text.toLowerCase())))
+                .collect(Collectors.toList());
+    }
+
+
 }

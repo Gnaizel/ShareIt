@@ -7,14 +7,14 @@ public class UserMapper {
     public static UserDto toDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
-                .login(user.getLogin())
+                .name(user.getName())
+                .email(user.getEmail())
                 .build();
     }
 
-    public static User toModel(UserDto user) {
+    public static User fromDto(UserDto userDto) {
         return User.builder()
-                .id(user.getId())
-                .login(user.getLogin())
+                .name(userDto.getName())
                 .build();
     }
 }

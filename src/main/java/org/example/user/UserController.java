@@ -1,5 +1,6 @@
 package org.example.user;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.UserDto;
 import org.example.dto.UserMapper;
@@ -8,10 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-@RestController("/users")
+@RestController
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-    UserService userService;
+    private final UserService userService;
 
     @GetMapping
     public Collection<UserDto> getAll() {
@@ -19,19 +21,20 @@ public class UserController {
                 .map(UserMapper::toDto)
                 .collect(Collectors.toSet());
     }
-    
+
     @GetMapping("/{id}")
     public UserDto getById(@PathVariable("id") long id) {
         return UserMapper.toDto(userService.getById(id));
     }
 
     @PostMapping
-    public UserDto add(User user) {
+    public UserDto add(@Valid @RequestBody User user) {
         return UserMapper.toDto(userService.save(user));
     }
 
-    @PutMapping
-    public UserDto update(User user) {
+    @PatchMapping("/{id}")
+    public UserDto update(@PathVariable("id") long id, @Valid @RequestBody User user) {
+        user.setId(id);
         return UserMapper.toDto(userService.update(user));
     }
 
@@ -39,5 +42,4 @@ public class UserController {
     public void delete(@PathVariable("id") long id) {
         userService.delete(id);
     }
-
 }
